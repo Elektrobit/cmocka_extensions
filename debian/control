@@ -1,5 +1,5 @@
 Source: cmocka-extensions
-Section: admin
+Section: devel
 Priority: optional
 Maintainer: Isaac True <isaac.true@emlix.com>
 Build-Depends:
@@ -25,6 +25,7 @@ Description: Collection of mocking related code extensions for cmocka
  Mocking related code extensions for cmocka used by elos and other projects.
 
 Package: cmocka-extensions-doc
+Section: doc
 Architecture: all
 Depends:
  ${misc:Depends},
