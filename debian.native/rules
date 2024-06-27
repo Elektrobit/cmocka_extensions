@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+
+# LTO needs to be disabled for the tests to work
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all optimize=-lto
+
+%:
+	dh $@ --buildsystem=cmake --builddirectory=debian/build
+
+override_dh_auto_build:
+	dh_auto_build -- all cmocka_extensions_doc
+
+override_dh_install:
+	dh_install
+	# Do not ship plantuml source files
+	find debian/ -name \*.plantuml -delete
+
+override_dh_compress:
+	# Do not compress .md files
+	dh_compress --exclude=.md

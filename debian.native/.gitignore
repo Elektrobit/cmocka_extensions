@@ -1,0 +1,8 @@
+/*.substvars
+/files
+/debhelper-build-stamp
+/cmocka-extensions-dev/
+/cmocka-extensions-doc/
+/.debhelper/
+/tmp/
+/*.debhelper.log

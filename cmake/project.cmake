@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-set(CMOCKA_EXTENSIONS_VERSION 0.50.0)
+set(CMOCKA_EXTENSIONS_VERSION 0.51.3)
 
 # Attention: Aside from the version, as many things as possible in this file
 #   should be put into functions, as this solves potential issues with commands
