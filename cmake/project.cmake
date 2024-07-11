@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-set(CMOCKA_EXTENSIONS_VERSION 0.52.0)
+set(CMOCKA_EXTENSIONS_VERSION 0.53.0)
 
 # Attention: Aside from the version, as many things as possible in this file
 #   should be put into functions, as this solves potential issues with commands
@@ -21,6 +21,7 @@ macro(project_set_environment)
   option(ENABLE_CI "Use CI mode for building" OFF)
   option(INSTALL_UNIT_TESTS "Install unit tests" ON)
   option(ENABLE_ASAN "Link with ASAN" ON)
+  option(ENABLE_GIT_VERSION "Enable the git hash for the version" ON)
 
   add_compile_options(
     -Wshadow -Wall -Wextra -pedantic -D_DEFAULT_SOURCE
@@ -54,7 +55,6 @@ macro(project_set_environment)
   endif()
 endmacro()
 
-find_package(Git REQUIRED)
 function(project_set_version_variables)
   if(ARGN)
     cmake_parse_arguments(PSVV "" "NAME" "" ${ARGN})
@@ -74,17 +74,22 @@ function(project_set_version_variables)
   set(${ver_micro_name} ${PROJECT_VERSION_PATCH} PARENT_SCOPE)
   set(PKG_VERSION ${ver_pkg} PARENT_SCOPE)
 
-  execute_process(
-    COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    RESULT_VARIABLE exit_code
-    OUTPUT_VARIABLE git_output
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-  if(NOT exit_code EQUAL 0)
-    message(WARNING "failed to retrive git short commit hash")
+  if (ENABLE_GIT_VERSION)
+    find_package(Git REQUIRED)
+    execute_process(
+      COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      RESULT_VARIABLE exit_code
+      OUTPUT_VARIABLE git_output
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+    if(NOT exit_code EQUAL 0)
+      message(WARNING "failed to retrive git short commit hash")
+      set(git_output "none")
+    endif()
+  else ()
     set(git_output "none")
-  endif()
+  endif ()
   set(${ver_git_name} ${git_output} PARENT_SCOPE)
   message(STATUS "-- Set version for ${prj_name}: ${ver_pkg}.${git_output}")
 endfunction()
