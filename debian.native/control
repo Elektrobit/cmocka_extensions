@@ -1,5 +1,5 @@
 Source: cmocka-extensions
-Section: admin
+Section: devel
 Priority: optional
 Maintainer: Isaac True <isaac.true@emlix.com>
 Build-Depends:
