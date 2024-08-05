@@ -16,6 +16,7 @@ RUN apt-get update \
     clang-tidy \
     cmake \
     curl \
+    debhelper \
     gdb \
     git \
     git-buildpackage \
