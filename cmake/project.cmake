@@ -22,6 +22,7 @@ macro(project_set_environment)
   option(INSTALL_UNIT_TESTS "Install unit tests" ON)
   option(ENABLE_ASAN "Link with ASAN" ON)
   option(ENABLE_GIT_VERSION "Enable the git hash for the version" ON)
+  option(INSTALL_MOCK_GENERATOR "Install the mock generator utest utility" ON)
 
   add_compile_options(
     -Wshadow -Wall -Wextra -pedantic -D_DEFAULT_SOURCE
