@@ -25,8 +25,8 @@ and can be used in the following manner:
 
 ::
 
-  cd <cmocka-extensions>
-  ./tools/mock/mock_generator.py ./src/components/eventbuffer /tmp/mock
+  cd <elos>
+  ./<Path to cmocka_extensions>/tools/mock/mock_generator.py ./src/components/eventbuffer /tmp/mock
 
 The first parameter is the component, the second parameter is the folder
 in which the mock files are created. The folder is created in case
@@ -34,6 +34,12 @@ is doesn't exist, while the mock files themselves are either created
 from scratch or overwritten.
 
 Note: While the mock files are largely functional, there are still some
-issues with the autogeneration that need to be worked out. That being said,
+issues with the auto generation that need to be worked out. That being said,
 correcting these issues should take a lot less time than writing
 everything from scratch, so experimentation is encouraged.
+
+
+Dependencies
+============
+
+The script requires the `libclang` and `json` python packages installed.
