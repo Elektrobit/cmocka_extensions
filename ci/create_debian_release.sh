@@ -18,7 +18,8 @@ export GIT_AUTHOR_EMAIL="${EMAIL}"
 export GIT_COMMITTER_EMAIL="${EMAIL}"
 export DEBMAIL="${EMAIL}"
 
-echo "   1.b setup ${EMAIL} /  ${DEBNAME} & ${DEBEMAIL}"
+git config --local user.name "${GIT_AUTHOR_NAME}"
+git config --local user.email "${GIT_AUTHOR_EMAIL}"
 
 gbp import-ref -u "${NEW_VERSION}" --debian-branch "$(git branch --show-current)"
 
@@ -31,7 +32,6 @@ echo "3.0 (quilt)" > debian/source/format
 
 dch -M "--newversion=${NEW_VERSION}-1" "New upstream tag ${NEW_VERSION}"
 git add debian/ && git commit -m "New upstream tag ${NEW_VERSION}"
+git checkout HEAD -- debian.native && git clean -fxd -- debian.native
 
-git checkout debian.native/changelog 
-rm debian.native/gbp.conf
-sudo gbp buildpackage --git-ignore-branch --git-compression=xz
+sudo gbp buildpackage --git-ignore-branch --git-compression=xz --git-ignore-new -uc -us
