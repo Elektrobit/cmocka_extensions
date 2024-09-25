@@ -33,3 +33,13 @@ Description: Documentation for mocking related code extensions for cmocka
  Mocking related code extensions for cmocka used by elos and other projects.
  .
  Documentation package.
+
+Package: cmocka-extensions-mock
+Architecture: any
+Depends:
+ ${misc:Depends},
+ python3,
+Description: Documentation for mocking related code extensions for cmocka
+ Mocking related code extensions for cmocka used by elos and other projects.
+ .
+ Documentation package.
