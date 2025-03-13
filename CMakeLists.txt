@@ -17,7 +17,3 @@ project_add_documentation_target(
 add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(test)
-
-if(PACKAGING)
-  include(cmake/Packing.cmake)
-endif(PACKAGING)
