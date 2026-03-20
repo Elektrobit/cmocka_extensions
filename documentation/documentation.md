@@ -149,10 +149,6 @@ injection (e.g. fail if an Event has a certain combination of values), simulatio
 (e.g. state changes, return values depending on parameters and so on), or, like in the example above,
 simply collect data from the calls to compare against expected values after the test case ran its course.
 
-The syntax of the call is either of the following:
-- `MOCK_FUNC_ALWAYS_WITH(<functionToBeMocked>, <customMockFunction>, <&mockData>);`
-- `MOCK_FUNC_AFTER_CALL_WITH(<functionToBeMocked>, <numberOfCalls>, <customMockFunction>, <&mockData>);`
-
 To access the mockData (which can be any variable type) within the overloaded function:
 - `MOCK_FUNC_DATA_NEW(<variableName>, <variableType>, <functionToBeMocked>);`
 
@@ -246,17 +242,18 @@ In addition to the test functionalities from [cmocka](https://api.cmocka.org/) i
 
 ### Enable mocking for a function call
 
-- `MOCK_FUNC_AFTER_CALL(<mocked function call>, N)`:
-	Mock after `N` calls to the original function (no mocking at -1, and alway mocks at -2).
 - `MOCK_FUNC_ENABLE(<mocked function call>)`:
-	Mock the next calls to the function.
-	Is an alias for `MOCK_FUNC_AFTER_CALL(<mocked function call>, 0)`
+	Mock the next call to the function.
+- `MOCK_FUNC_AFTER_CALL(<mocked function call>, N)`:
+	Mock after `N` calls to the original function.
+- `MOCK_FUNC_COUNT(<mocked function call>, N)`:
+	Mock `N` calls of the function.
+- `MOCK_FUNC_COUNT_AFTER_CALL(<mocked function call>, N, M)`:
+	Mock `N` calls of the function after `M` calls to the original function.
 - `MOCK_FUNC_ALWAYS(<mocked function call>)`:
 	Mock all subsequent calls to the function.
-	Is an alias for `MOCK_FUNC_AFTER_CALL(<mocked function call>, -2)`
 - `MOCK_FUNC_DISABLE(<mocked function call>)`:
-	Disable mocking for the function again (needed after `MOCKI_FUNC_ALWAYS()`).
-	Is an alias for `MOCK_FUNC_AFTER_CALL(<mocked function call>, -1)`
+	Disable mocking for the function again (needed after `MOCK_FUNC_ALWAYS()`).
 - `MOCK_FUNC_NEVER(<mocked function call>)`:
 	The same as `MOCK_FUNC_DISABLE(<mocked function call>)`
 
