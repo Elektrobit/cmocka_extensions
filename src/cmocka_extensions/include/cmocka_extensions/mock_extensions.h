@@ -8,6 +8,7 @@
 typedef void cmockaMockFunc_t(void);
 
 typedef struct {
+    int callCount;
     int afterCall;
     cmockaMockFunc_t *funcPtr;
     void *funcData;
@@ -20,24 +21,29 @@ typedef enum {
 } cmockaMockTypeE_t;
 
 #define CMOCKA_MOCK_INIT \
-    { .afterCall = -1, .funcPtr = NULL, .funcData = NULL }
+    { .callCount = 0, .afterCall = 0, .funcPtr = NULL, .funcData = NULL }
 
-#define MOCK_FUNC_AFTER_CALL_WITH(__mockf, __mocka, __mockfp, __mockfd) \
-    {                                                                   \
-        __mock##_##__mockf.afterCall = __mocka;                         \
-        __mock##_##__mockf.funcPtr = (cmockaMockFunc_t *)(__mockfp);    \
-        __mock##_##__mockf.funcData = (void *)(__mockfd);               \
+#define MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, __mockc, __mocka, __mockfp, __mockfd) \
+    {                                                                                  \
+        __mock##_##__mockf.callCount = __mockc;                                        \
+        __mock##_##__mockf.afterCall = __mocka;                                        \
+        __mock##_##__mockf.funcPtr = (cmockaMockFunc_t *)(__mockfp);                   \
+        __mock##_##__mockf.funcData = (void *)(__mockfd);                              \
     }
 
-#define MOCK_FUNC_AFTER_CALL(__mockf, __mocka) MOCK_FUNC_AFTER_CALL_WITH(__mockf, __mocka, NULL, NULL)
-#define MOCK_FUNC_ENABLE(__mockf)              MOCK_FUNC_AFTER_CALL_WITH(__mockf, 0, NULL, NULL)
-#define MOCK_FUNC_DISABLE(__mockf)             MOCK_FUNC_AFTER_CALL_WITH(__mockf, -1, NULL, NULL)
+#define MOCK_FUNC_AFTER_CALL_WITH(__mockf, __mocka, __mockfp, __mockfd) \
+                                                              MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, 1, __mocka, __mockfp, __mockfd)
+#define MOCK_FUNC_AFTER_CALL(__mockf, __mocka)                MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, 1, __mocka, NULL, NULL)
+#define MOCK_FUNC_ENABLE(__mockf)                             MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, 1, 0, NULL, NULL)
+#define MOCK_FUNC_COUNT(__mockf, __mockc)                     MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, __mockc, 0, NULL, NULL)
+#define MOCK_FUNC_COUNT_AFTER_CALL(__mockf, __mockc, __mocka) MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, __mockc, __mocka, NULL, NULL)
+#define MOCK_FUNC_DISABLE(__mockf)                            MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, 0, 0, NULL, NULL)
 
 /*  If using MOCK_FUNC_ALWAYS in a test case make sure to call MOCK_FUNC_DISABLE on
     cleanup or other test cases would be effected by MOCK_FUNC_ALWAYS.
 */
-#define MOCK_FUNC_ALWAYS_WITH(__mockf, __mockfp, __mockfd) MOCK_FUNC_AFTER_CALL_WITH(__mockf, -2, __mockfp, __mockfd);
-#define MOCK_FUNC_ALWAYS(__mockf)                          MOCK_FUNC_AFTER_CALL_WITH(__mockf, -2, NULL, NULL)
+#define MOCK_FUNC_ALWAYS_WITH(__mockf, __mockfp, __mockfd) MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, -1, 0, __mockfp, __mockfd);
+#define MOCK_FUNC_ALWAYS(__mockf)                          MOCK_FUNC_COUNT_AFTER_CALL_WITH(__mockf, -1, 0, NULL, NULL)
 #define MOCK_FUNC_NEVER(__mockf)                           MOCK_FUNC_DISABLE(__mockf)
 
 #define MOCK_FUNC_TYPEDEF_NEW(__name, __result, ...) typedef __result __mock##_##__name##_##t(__VA_ARGS__)
@@ -51,14 +57,22 @@ typedef enum {
 
 static inline cmockaMockTypeE_t _cmockaMockGetType(cmockaMock_t *mock) {
     cmockaMockTypeE_t result = CMOCKA_MOCK_DISABLED;
-    if (mock->afterCall == -2) {
-        result = CMOCKA_MOCK_ENABLED;
-    } else if (mock->afterCall == 0) {
-        mock->afterCall = -1;
-        result = CMOCKA_MOCK_ENABLED;
-    } else if (mock->afterCall > 0) {
-        mock->afterCall -= 1;
+
+    if (mock->callCount == -1) {
+        if (mock->afterCall > 0) {
+            mock->afterCall -= 1;
+        } else {
+            result = CMOCKA_MOCK_ENABLED;
+        }
+    } else if (mock->callCount > 0) {
+        if (mock->afterCall > 0) {
+            mock->afterCall -= 1;
+        } else {
+            mock->callCount -= 1;
+            result = CMOCKA_MOCK_ENABLED;
+        }
     }
+
     if ((result == CMOCKA_MOCK_ENABLED) && (mock->funcPtr != NULL)) {
         result = CMOCKA_MOCK_ENABLED_WITH_FUNC;
     }
